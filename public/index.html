@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parish Meal Sign-Up</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="cross-ornament">&#9768;</div>
+      <div class="header-text">
+        <h1>Parish Meal Sign-Up</h1>
+        <p class="subtitle">Let us gather and break bread together</p>
+      </div>
+      <div class="cross-ornament">&#9768;</div>
+    </div>
+    <div class="header-divider"></div>
+  </header>
+
+  <main>
+    <section class="form-section">
+      <div class="card">
+        <h2 class="card-title"><span class="title-ornament">&#10022;</span> Add Your Name <span class="title-ornament">&#10022;</span></h2>
+
+        <form id="signup-form">
+          <div class="field">
+            <label for="name">Your Name</label>
+            <input type="text" id="name" name="name" placeholder="Full name" required />
+          </div>
+
+          <fieldset class="contribution-group">
+            <legend>What will you be contributing?</legend>
+
+            <div class="contribution-item">
+              <label class="toggle-label">
+                <input type="checkbox" id="bringing_meal" name="bringing_meal" />
+                <span class="toggle-box"></span>
+                <span class="toggle-text">
+                  <span class="icon">&#127859;</span> Main Meal Dish
+                </span>
+              </label>
+              <div class="detail-field" id="meal-detail">
+                <input type="text" id="meal_description" name="meal_description" placeholder="What dish will you bring?" />
+              </div>
+            </div>
+
+            <div class="contribution-item">
+              <label class="toggle-label">
+                <input type="checkbox" id="bringing_sides" name="bringing_sides" />
+                <span class="toggle-box"></span>
+                <span class="toggle-text">
+                  <span class="icon">&#127793;</span> Sides / Salad
+                </span>
+              </label>
+              <div class="detail-field" id="sides-detail">
+                <input type="text" id="sides_description" name="sides_description" placeholder="What sides will you bring?" />
+              </div>
+            </div>
+
+            <div class="contribution-item">
+              <label class="toggle-label">
+                <input type="checkbox" id="bringing_drink" name="bringing_drink" />
+                <span class="toggle-box"></span>
+                <span class="toggle-text">
+                  <span class="icon">&#127863;</span> Beverage / Drink
+                </span>
+              </label>
+              <div class="detail-field" id="drink-detail">
+                <input type="text" id="drink_description" name="drink_description" placeholder="What beverage will you bring?" />
+              </div>
+            </div>
+
+            <div class="contribution-item no-detail">
+              <label class="toggle-label">
+                <input type="checkbox" id="cleaning_up" name="cleaning_up" />
+                <span class="toggle-box"></span>
+                <span class="toggle-text">
+                  <span class="icon">&#10024;</span> Help with Clean-Up
+                </span>
+              </label>
+            </div>
+          </fieldset>
+
+          <div id="form-error" class="form-error" style="display:none;"></div>
+          <button type="submit" class="btn-submit">Sign Me Up</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="results-section">
+      <div class="card">
+        <h2 class="card-title"><span class="title-ornament">&#10022;</span> Who Has Signed Up <span class="title-ornament">&#10022;</span></h2>
+
+        <div class="summary-grid" id="summary-grid">
+          <div class="summary-card" id="sum-meals">
+            <div class="sum-icon">&#127859;</div>
+            <div class="sum-count" id="count-meals">0</div>
+            <div class="sum-label">Main Dishes</div>
+          </div>
+          <div class="summary-card" id="sum-sides">
+            <div class="sum-icon">&#127793;</div>
+            <div class="sum-count" id="count-sides">0</div>
+            <div class="sum-label">Sides</div>
+          </div>
+          <div class="summary-card" id="sum-drinks">
+            <div class="sum-icon">&#127863;</div>
+            <div class="sum-count" id="count-drinks">0</div>
+            <div class="sum-label">Beverages</div>
+          </div>
+          <div class="summary-card" id="sum-cleanup">
+            <div class="sum-icon">&#10024;</div>
+            <div class="sum-count" id="count-cleanup">0</div>
+            <div class="sum-label">Clean-Up</div>
+          </div>
+        </div>
+
+        <div id="signups-list" class="signups-list">
+          <div class="empty-state">No sign-ups yet. Be the first!</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-divider"></div>
+    <p>&#9768; Glory to God for all things &#9768;</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
