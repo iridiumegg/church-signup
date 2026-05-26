@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <header>
     <div class="header-inner">
       <div class="cross-ornament">&#9768;</div>
@@ -19,114 +20,263 @@
     <div class="header-divider"></div>
   </header>
 
+  <!-- Event tab bar -->
+  <div class="event-bar">
+    <div class="event-tabs" id="event-tabs"></div>
+    <div class="event-bar-actions">
+      <button id="btn-print" class="btn-bar">&#9113; Print</button>
+      <button id="btn-admin" class="btn-bar">&#9965; Admin</button>
+    </div>
+  </div>
+
   <main>
-    <section class="form-section">
+
+    <!-- Progress bars -->
+    <section class="progress-section">
       <div class="card">
-        <h2 class="card-title"><span class="title-ornament">&#10022;</span> Add Your Name <span class="title-ornament">&#10022;</span></h2>
-
-        <form id="signup-form">
-          <div class="field">
-            <label for="name">Your Name</label>
-            <input type="text" id="name" name="name" placeholder="Full name" required />
+        <h2 class="card-title">
+          <span class="title-ornament">&#10022;</span> Sign-Up Progress <span class="title-ornament">&#10022;</span>
+        </h2>
+        <div class="progress-grid" id="progress-grid">
+          <div class="progress-row">
+            <span class="progress-label"><span class="progress-icon">&#127859;</span> Main Dishes</span>
+            <div class="progress-track"><div class="progress-fill" id="bar-meals"></div></div>
+            <span class="progress-count" id="frac-meals">—</span>
           </div>
-
-          <fieldset class="contribution-group">
-            <legend>What will you be contributing?</legend>
-
-            <div class="contribution-item">
-              <label class="toggle-label">
-                <input type="checkbox" id="bringing_meal" name="bringing_meal" />
-                <span class="toggle-box"></span>
-                <span class="toggle-text">
-                  <span class="icon">&#127859;</span> Main Meal Dish
-                </span>
-              </label>
-              <div class="detail-field" id="meal-detail">
-                <input type="text" id="meal_description" name="meal_description" placeholder="What dish will you bring?" />
-              </div>
-            </div>
-
-            <div class="contribution-item">
-              <label class="toggle-label">
-                <input type="checkbox" id="bringing_sides" name="bringing_sides" />
-                <span class="toggle-box"></span>
-                <span class="toggle-text">
-                  <span class="icon">&#127793;</span> Sides / Salad
-                </span>
-              </label>
-              <div class="detail-field" id="sides-detail">
-                <input type="text" id="sides_description" name="sides_description" placeholder="What sides will you bring?" />
-              </div>
-            </div>
-
-            <div class="contribution-item">
-              <label class="toggle-label">
-                <input type="checkbox" id="bringing_drink" name="bringing_drink" />
-                <span class="toggle-box"></span>
-                <span class="toggle-text">
-                  <span class="icon">&#127863;</span> Beverage / Drink
-                </span>
-              </label>
-              <div class="detail-field" id="drink-detail">
-                <input type="text" id="drink_description" name="drink_description" placeholder="What beverage will you bring?" />
-              </div>
-            </div>
-
-            <div class="contribution-item no-detail">
-              <label class="toggle-label">
-                <input type="checkbox" id="cleaning_up" name="cleaning_up" />
-                <span class="toggle-box"></span>
-                <span class="toggle-text">
-                  <span class="icon">&#10024;</span> Help with Clean-Up
-                </span>
-              </label>
-            </div>
-          </fieldset>
-
-          <div id="form-error" class="form-error" style="display:none;"></div>
-          <button type="submit" class="btn-submit">Sign Me Up</button>
-        </form>
-      </div>
-    </section>
-
-    <section class="results-section">
-      <div class="card">
-        <h2 class="card-title"><span class="title-ornament">&#10022;</span> Who Has Signed Up <span class="title-ornament">&#10022;</span></h2>
-
-        <div class="summary-grid" id="summary-grid">
-          <div class="summary-card" id="sum-meals">
-            <div class="sum-icon">&#127859;</div>
-            <div class="sum-count" id="count-meals">0</div>
-            <div class="sum-label">Main Dishes</div>
+          <div class="progress-row">
+            <span class="progress-label"><span class="progress-icon">&#127793;</span> Sides</span>
+            <div class="progress-track"><div class="progress-fill" id="bar-sides"></div></div>
+            <span class="progress-count" id="frac-sides">—</span>
           </div>
-          <div class="summary-card" id="sum-sides">
-            <div class="sum-icon">&#127793;</div>
-            <div class="sum-count" id="count-sides">0</div>
-            <div class="sum-label">Sides</div>
+          <div class="progress-row">
+            <span class="progress-label"><span class="progress-icon">&#127863;</span> Beverages</span>
+            <div class="progress-track"><div class="progress-fill" id="bar-drinks"></div></div>
+            <span class="progress-count" id="frac-drinks">—</span>
           </div>
-          <div class="summary-card" id="sum-drinks">
-            <div class="sum-icon">&#127863;</div>
-            <div class="sum-count" id="count-drinks">0</div>
-            <div class="sum-label">Beverages</div>
+          <div class="progress-row">
+            <span class="progress-label"><span class="progress-icon">&#10024;</span> Clean-Up</span>
+            <div class="progress-track"><div class="progress-fill" id="bar-cleanup"></div></div>
+            <span class="progress-count" id="frac-cleanup">—</span>
           </div>
-          <div class="summary-card" id="sum-cleanup">
-            <div class="sum-icon">&#10024;</div>
-            <div class="sum-count" id="count-cleanup">0</div>
-            <div class="sum-label">Clean-Up</div>
-          </div>
-        </div>
-
-        <div id="signups-list" class="signups-list">
-          <div class="empty-state">No sign-ups yet. Be the first!</div>
         </div>
       </div>
     </section>
+
+    <!-- Two-column: form + results -->
+    <div class="content-grid">
+
+      <section class="form-section">
+        <div class="card">
+          <h2 class="card-title">
+            <span class="title-ornament">&#10022;</span> Add Your Name <span class="title-ornament">&#10022;</span>
+          </h2>
+          <form id="signup-form">
+            <div class="field">
+              <label for="name">Your Name</label>
+              <input type="text" id="name" placeholder="Full name" required />
+            </div>
+            <fieldset class="contribution-group">
+              <legend>What will you be contributing?</legend>
+
+              <div class="contribution-item">
+                <label class="toggle-label">
+                  <input type="checkbox" id="bringing_meal" />
+                  <span class="toggle-box"></span>
+                  <span class="toggle-text"><span class="icon">&#127859;</span> Main Meal Dish</span>
+                </label>
+                <div class="detail-field" id="meal-detail">
+                  <input type="text" id="meal_description" placeholder="What dish will you bring?" />
+                </div>
+              </div>
+
+              <div class="contribution-item">
+                <label class="toggle-label">
+                  <input type="checkbox" id="bringing_sides" />
+                  <span class="toggle-box"></span>
+                  <span class="toggle-text"><span class="icon">&#127793;</span> Sides / Salad</span>
+                </label>
+                <div class="detail-field" id="sides-detail">
+                  <input type="text" id="sides_description" placeholder="What sides will you bring?" />
+                </div>
+              </div>
+
+              <div class="contribution-item">
+                <label class="toggle-label">
+                  <input type="checkbox" id="bringing_drink" />
+                  <span class="toggle-box"></span>
+                  <span class="toggle-text"><span class="icon">&#127863;</span> Beverage / Drink</span>
+                </label>
+                <div class="detail-field" id="drink-detail">
+                  <input type="text" id="drink_description" placeholder="What beverage will you bring?" />
+                </div>
+              </div>
+
+              <div class="contribution-item no-detail">
+                <label class="toggle-label">
+                  <input type="checkbox" id="cleaning_up" />
+                  <span class="toggle-box"></span>
+                  <span class="toggle-text"><span class="icon">&#10024;</span> Help with Clean-Up</span>
+                </label>
+              </div>
+            </fieldset>
+            <div id="form-error" class="form-error" style="display:none;"></div>
+            <button type="submit" class="btn-submit">Sign Me Up</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="results-section">
+        <div class="card">
+          <h2 class="card-title">
+            <span class="title-ornament">&#10022;</span> Who Has Signed Up <span class="title-ornament">&#10022;</span>
+          </h2>
+          <div id="signups-list" class="signups-list">
+            <div class="empty-state">No sign-ups yet. Be the first!</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
   </main>
 
   <footer>
     <div class="footer-divider"></div>
     <p>&#9768; Glory to God for all things &#9768;</p>
   </footer>
+
+  <!-- ── Admin Login Modal ── -->
+  <div class="modal-overlay" id="modal-admin-login" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Admin Sign In</h3>
+        <button class="modal-close" data-close="modal-admin-login">&#10005;</button>
+      </div>
+      <div class="field">
+        <label for="admin-pw">Password</label>
+        <input type="password" id="admin-pw" placeholder="Enter admin password" />
+      </div>
+      <div id="admin-login-error" class="form-error" style="display:none;"></div>
+      <button id="btn-admin-submit" class="btn-submit" style="margin-top:1rem;">Sign In</button>
+    </div>
+  </div>
+
+  <!-- ── Admin Panel Modal ── -->
+  <div class="modal-overlay" id="modal-admin-panel" style="display:none;">
+    <div class="modal-box modal-wide">
+      <div class="modal-header">
+        <h3>Admin Panel</h3>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <button id="btn-logout" class="btn-logout">Sign Out</button>
+          <button class="modal-close" data-close="modal-admin-panel">&#10005;</button>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <h4 id="ev-form-title">Create New Event</h4>
+        <form id="event-form">
+          <input type="hidden" id="ev-id" value="" />
+          <div class="admin-grid">
+            <div class="field span-2">
+              <label>Event Name</label>
+              <input type="text" id="ev-name" placeholder="e.g. Pentecost Luncheon" required />
+            </div>
+            <div class="field">
+              <label>Date (optional)</label>
+              <input type="date" id="ev-date" />
+            </div>
+            <div class="field"></div>
+            <div class="field">
+              <label>Main Dish Goal</label>
+              <input type="number" id="ev-meal" min="0" value="0" />
+            </div>
+            <div class="field">
+              <label>Sides Goal</label>
+              <input type="number" id="ev-sides" min="0" value="0" />
+            </div>
+            <div class="field">
+              <label>Beverage Goal</label>
+              <input type="number" id="ev-drinks" min="0" value="0" />
+            </div>
+            <div class="field">
+              <label>Clean-Up Goal</label>
+              <input type="number" id="ev-cleanup" min="0" value="0" />
+            </div>
+          </div>
+          <div id="ev-form-error" class="form-error" style="display:none;"></div>
+          <div class="btn-row">
+            <button type="submit" class="btn-submit" style="flex:1;">Save Event</button>
+            <button type="button" id="btn-ev-cancel" class="btn-cancel" style="display:none;">Cancel</button>
+          </div>
+        </form>
+      </div>
+
+      <hr class="admin-divider" />
+
+      <div class="admin-section">
+        <h4>All Events</h4>
+        <div id="admin-events-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Edit Signup Modal ── -->
+  <div class="modal-overlay" id="modal-edit" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>Edit Sign-Up</h3>
+        <button class="modal-close" data-close="modal-edit">&#10005;</button>
+      </div>
+      <form id="edit-form">
+        <input type="hidden" id="edit-id" />
+        <div class="field">
+          <label for="edit-name">Name</label>
+          <input type="text" id="edit-name" required />
+        </div>
+        <fieldset class="contribution-group">
+          <legend>Contributions</legend>
+          <div class="contribution-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="edit-bringing-meal" />
+              <span class="toggle-box"></span>
+              <span class="toggle-text"><span class="icon">&#127859;</span> Main Meal Dish</span>
+            </label>
+            <div class="detail-field" id="edit-meal-detail">
+              <input type="text" id="edit-meal-desc" placeholder="What dish?" />
+            </div>
+          </div>
+          <div class="contribution-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="edit-bringing-sides" />
+              <span class="toggle-box"></span>
+              <span class="toggle-text"><span class="icon">&#127793;</span> Sides / Salad</span>
+            </label>
+            <div class="detail-field" id="edit-sides-detail">
+              <input type="text" id="edit-sides-desc" placeholder="What sides?" />
+            </div>
+          </div>
+          <div class="contribution-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="edit-bringing-drink" />
+              <span class="toggle-box"></span>
+              <span class="toggle-text"><span class="icon">&#127863;</span> Beverage</span>
+            </label>
+            <div class="detail-field" id="edit-drink-detail">
+              <input type="text" id="edit-drink-desc" placeholder="What beverage?" />
+            </div>
+          </div>
+          <div class="contribution-item no-detail">
+            <label class="toggle-label">
+              <input type="checkbox" id="edit-cleaning-up" />
+              <span class="toggle-box"></span>
+              <span class="toggle-text"><span class="icon">&#10024;</span> Help with Clean-Up</span>
+            </label>
+          </div>
+        </fieldset>
+        <div id="edit-error" class="form-error" style="display:none;"></div>
+        <button type="submit" class="btn-submit">Save Changes</button>
+      </form>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
