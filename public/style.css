@@ -522,6 +522,11 @@ main {
   color: var(--gold-light);
 }
 
+.contrib-tag.dessert {
+  background: #6b3a5a;
+  color: #f5d9eb;
+}
+
 .contrib-tag.cleanup {
   background: var(--gold-dark);
   color: var(--text-light);

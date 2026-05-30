@@ -67,11 +67,13 @@ function renderProgress() {
   const ev = currentEvent || {};
   const meals   = currentSignups.filter(s => s.bringing_meal).length;
   const sides   = currentSignups.filter(s => s.bringing_sides).length;
+  const desserts = currentSignups.filter(s => s.bringing_dessert).length;
   const drinks  = currentSignups.filter(s => s.bringing_drink).length;
   const cleanup = currentSignups.filter(s => s.cleaning_up).length;
   setBar('meals',   meals,   ev.meal_target);
-  setBar('sides',   sides,   ev.sides_target);
-  setBar('drinks',  drinks,  ev.drink_target);
+  setBar('sides',    sides,    ev.sides_target);
+  setBar('desserts', desserts, ev.dessert_target);
+  setBar('drinks',   drinks,   ev.drink_target);
   setBar('cleanup', cleanup, ev.cleanup_target);
 }
 
@@ -110,9 +112,10 @@ function buildEntry(signup) {
   div.dataset.id = signup.id;
 
   const tags = [];
-  if (signup.bringing_meal)  tags.push(`<span class="contrib-tag meal">&#127859; ${escHtml(signup.meal_description  || 'Main dish')}</span>`);
-  if (signup.bringing_sides) tags.push(`<span class="contrib-tag sides">&#127793; ${escHtml(signup.sides_description || 'Sides')}</span>`);
-  if (signup.bringing_drink) tags.push(`<span class="contrib-tag drink">&#127863; ${escHtml(signup.drink_description  || 'Drink')}</span>`);
+  if (signup.bringing_meal)    tags.push(`<span class="contrib-tag meal">&#127859; ${escHtml(signup.meal_description    || 'Main dish')}</span>`);
+  if (signup.bringing_sides)   tags.push(`<span class="contrib-tag sides">&#127793; ${escHtml(signup.sides_description  || 'Sides')}</span>`);
+  if (signup.bringing_dessert) tags.push(`<span class="contrib-tag dessert">&#127856; ${escHtml(signup.dessert_description || 'Dessert')}</span>`);
+  if (signup.bringing_drink)   tags.push(`<span class="contrib-tag drink">&#127863; ${escHtml(signup.drink_description   || 'Drink')}</span>`);
   if (signup.cleaning_up)    tags.push(`<span class="contrib-tag cleanup">&#10024; Clean-Up</span>`);
   if (!tags.length)          tags.push(`<span class="contrib-tag attending">Attending</span>`);
 
@@ -136,7 +139,7 @@ function buildEntry(signup) {
 
 // ── Main Form ──
 function setupFormListeners() {
-  [['bringing_meal', 'meal-detail'], ['bringing_sides', 'sides-detail'], ['bringing_drink', 'drink-detail']].forEach(
+  [['bringing_meal', 'meal-detail'], ['bringing_sides', 'sides-detail'], ['bringing_dessert', 'dessert-detail'], ['bringing_drink', 'drink-detail']].forEach(
     ([cbId, detailId]) => wireToggle(cbId, detailId)
   );
 
@@ -150,9 +153,11 @@ function setupFormListeners() {
       name:              document.getElementById('name').value.trim(),
       bringing_meal:     document.getElementById('bringing_meal').checked,
       meal_description:  document.getElementById('meal_description').value.trim(),
-      bringing_sides:    document.getElementById('bringing_sides').checked,
-      sides_description: document.getElementById('sides_description').value.trim(),
-      bringing_drink:    document.getElementById('bringing_drink').checked,
+      bringing_sides:      document.getElementById('bringing_sides').checked,
+      sides_description:   document.getElementById('sides_description').value.trim(),
+      bringing_dessert:    document.getElementById('bringing_dessert').checked,
+      dessert_description: document.getElementById('dessert_description').value.trim(),
+      bringing_drink:      document.getElementById('bringing_drink').checked,
       drink_description: document.getElementById('drink_description').value.trim(),
       cleaning_up:       document.getElementById('cleaning_up').checked,
     };
@@ -186,7 +191,7 @@ function setupFormListeners() {
 
 // ── Edit Modal ──
 function setupEditModalListeners() {
-  [['edit-bringing-meal', 'edit-meal-detail'], ['edit-bringing-sides', 'edit-sides-detail'], ['edit-bringing-drink', 'edit-drink-detail']].forEach(
+  [['edit-bringing-meal', 'edit-meal-detail'], ['edit-bringing-sides', 'edit-sides-detail'], ['edit-bringing-dessert', 'edit-dessert-detail'], ['edit-bringing-drink', 'edit-drink-detail']].forEach(
     ([cbId, detailId]) => wireToggle(cbId, detailId)
   );
 
@@ -200,9 +205,11 @@ function setupEditModalListeners() {
       name:              document.getElementById('edit-name').value.trim(),
       bringing_meal:     document.getElementById('edit-bringing-meal').checked,
       meal_description:  document.getElementById('edit-meal-desc').value.trim(),
-      bringing_sides:    document.getElementById('edit-bringing-sides').checked,
-      sides_description: document.getElementById('edit-sides-desc').value.trim(),
-      bringing_drink:    document.getElementById('edit-bringing-drink').checked,
+      bringing_sides:      document.getElementById('edit-bringing-sides').checked,
+      sides_description:   document.getElementById('edit-sides-desc').value.trim(),
+      bringing_dessert:    document.getElementById('edit-bringing-dessert').checked,
+      dessert_description: document.getElementById('edit-dessert-desc').value.trim(),
+      bringing_drink:      document.getElementById('edit-bringing-drink').checked,
       drink_description: document.getElementById('edit-drink-desc').value.trim(),
       cleaning_up:       document.getElementById('edit-cleaning-up').checked,
     };
@@ -233,14 +240,17 @@ function openEditModal(id) {
   document.getElementById('edit-name').value            = s.name;
   document.getElementById('edit-bringing-meal').checked = !!s.bringing_meal;
   document.getElementById('edit-meal-desc').value       = s.meal_description  || '';
-  document.getElementById('edit-bringing-sides').checked = !!s.bringing_sides;
-  document.getElementById('edit-sides-desc').value      = s.sides_description || '';
-  document.getElementById('edit-bringing-drink').checked = !!s.bringing_drink;
+  document.getElementById('edit-bringing-sides').checked   = !!s.bringing_sides;
+  document.getElementById('edit-sides-desc').value         = s.sides_description   || '';
+  document.getElementById('edit-bringing-dessert').checked = !!s.bringing_dessert;
+  document.getElementById('edit-dessert-desc').value       = s.dessert_description || '';
+  document.getElementById('edit-bringing-drink').checked   = !!s.bringing_drink;
   document.getElementById('edit-drink-desc').value      = s.drink_description || '';
   document.getElementById('edit-cleaning-up').checked   = !!s.cleaning_up;
 
   document.getElementById('edit-meal-detail').classList.toggle('visible', !!s.bringing_meal);
   document.getElementById('edit-sides-detail').classList.toggle('visible', !!s.bringing_sides);
+  document.getElementById('edit-dessert-detail').classList.toggle('visible', !!s.bringing_dessert);
   document.getElementById('edit-drink-detail').classList.toggle('visible', !!s.bringing_drink);
   document.getElementById('edit-error').style.display = 'none';
 
@@ -318,10 +328,11 @@ function setupAdminListeners() {
     const body = {
       name:           document.getElementById('ev-name').value.trim(),
       event_date:     document.getElementById('ev-date').value  || null,
-      meal_target:    parseInt(document.getElementById('ev-meal').value)    || 0,
-      sides_target:   parseInt(document.getElementById('ev-sides').value)   || 0,
-      drink_target:   parseInt(document.getElementById('ev-drinks').value)  || 0,
-      cleanup_target: parseInt(document.getElementById('ev-cleanup').value) || 0,
+      meal_target:    parseInt(document.getElementById('ev-meal').value)     || 0,
+      sides_target:   parseInt(document.getElementById('ev-sides').value)    || 0,
+      dessert_target: parseInt(document.getElementById('ev-desserts').value) || 0,
+      drink_target:   parseInt(document.getElementById('ev-drinks').value)   || 0,
+      cleanup_target: parseInt(document.getElementById('ev-cleanup').value)  || 0,
     };
 
     const res = await fetch(isEdit ? `/api/events/${evId}` : '/api/events', {
@@ -366,8 +377,9 @@ function setupAdminListeners() {
       document.getElementById('ev-name').value   = ev.name;
       document.getElementById('ev-date').value   = ev.event_date || '';
       document.getElementById('ev-meal').value   = ev.meal_target;
-      document.getElementById('ev-sides').value  = ev.sides_target;
-      document.getElementById('ev-drinks').value = ev.drink_target;
+      document.getElementById('ev-sides').value    = ev.sides_target;
+      document.getElementById('ev-desserts').value = ev.dessert_target;
+      document.getElementById('ev-drinks').value   = ev.drink_target;
       document.getElementById('ev-cleanup').value = ev.cleanup_target;
       document.getElementById('ev-form-title').textContent = 'Edit Event';
       document.getElementById('btn-ev-cancel').style.display = 'inline-block';
@@ -420,7 +432,7 @@ function renderAdminEventsList() {
         <strong>${escHtml(ev.name)}</strong>
         <span class="admin-event-meta">
           ${ev.event_date ? fmtShortDate(ev.event_date) + ' &nbsp;|&nbsp; ' : ''}
-          Goals: ${ev.meal_target} meals / ${ev.sides_target} sides / ${ev.drink_target} drinks / ${ev.cleanup_target} clean-up
+          Goals: ${ev.meal_target} meals / ${ev.sides_target} sides / ${ev.dessert_target} desserts / ${ev.drink_target} drinks / ${ev.cleanup_target} clean-up
         </span>
       </div>
       <div class="admin-event-btns">
@@ -436,8 +448,9 @@ function resetEventForm() {
   document.getElementById('ev-name').value    = '';
   document.getElementById('ev-date').value    = '';
   document.getElementById('ev-meal').value    = '0';
-  document.getElementById('ev-sides').value   = '0';
-  document.getElementById('ev-drinks').value  = '0';
+  document.getElementById('ev-sides').value    = '0';
+  document.getElementById('ev-desserts').value = '0';
+  document.getElementById('ev-drinks').value   = '0';
   document.getElementById('ev-cleanup').value = '0';
   document.getElementById('ev-form-title').textContent  = 'Create New Event';
   document.getElementById('btn-ev-cancel').style.display = 'none';
@@ -450,10 +463,11 @@ function printView() {
   const ev  = currentEvent;
   const sgs = currentSignups;
 
-  const meals   = sgs.filter(s => s.bringing_meal);
-  const sides   = sgs.filter(s => s.bringing_sides);
-  const drinks  = sgs.filter(s => s.bringing_drink);
-  const cleanup = sgs.filter(s => s.cleaning_up);
+  const meals    = sgs.filter(s => s.bringing_meal);
+  const sides    = sgs.filter(s => s.bringing_sides);
+  const desserts = sgs.filter(s => s.bringing_dessert);
+  const drinks   = sgs.filter(s => s.bringing_drink);
+  const cleanup  = sgs.filter(s => s.cleaning_up);
 
   const html = `<!DOCTYPE html><html><head>
 <meta charset="UTF-8">
@@ -481,11 +495,13 @@ function printView() {
 <div class="progress">
   ${printProgItem(meals.length, ev.meal_target, 'Main Dishes')}
   ${printProgItem(sides.length, ev.sides_target, 'Sides')}
+  ${printProgItem(desserts.length, ev.dessert_target, 'Desserts')}
   ${printProgItem(drinks.length, ev.drink_target, 'Beverages')}
   ${printProgItem(cleanup.length, ev.cleanup_target, 'Clean-Up')}
 </div>
 ${printTable('&#127859; Main Dishes', meals, 'meal_description')}
 ${printTable('&#127793; Sides / Salads', sides, 'sides_description')}
+${printTable('&#127856; Desserts', desserts, 'dessert_description')}
 ${printTable('&#127863; Beverages', drinks, 'drink_description')}
 ${printTable('&#10024; Clean-Up Volunteers', cleanup, null)}
 <footer>&#9768; Glory to God for all things &#9768;</footer>

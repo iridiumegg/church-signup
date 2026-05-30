@@ -49,6 +49,11 @@
             <span class="progress-count" id="frac-sides">—</span>
           </div>
           <div class="progress-row">
+            <span class="progress-label"><span class="progress-icon">&#127856;</span> Desserts</span>
+            <div class="progress-track"><div class="progress-fill" id="bar-desserts"></div></div>
+            <span class="progress-count" id="frac-desserts">—</span>
+          </div>
+          <div class="progress-row">
             <span class="progress-label"><span class="progress-icon">&#127863;</span> Beverages</span>
             <div class="progress-track"><div class="progress-fill" id="bar-drinks"></div></div>
             <span class="progress-count" id="frac-drinks">—</span>
@@ -97,6 +102,17 @@
                 </label>
                 <div class="detail-field" id="sides-detail">
                   <input type="text" id="sides_description" placeholder="What sides will you bring?" />
+                </div>
+              </div>
+
+              <div class="contribution-item">
+                <label class="toggle-label">
+                  <input type="checkbox" id="bringing_dessert" />
+                  <span class="toggle-box"></span>
+                  <span class="toggle-text"><span class="icon">&#127856;</span> Dessert</span>
+                </label>
+                <div class="detail-field" id="dessert-detail">
+                  <input type="text" id="dessert_description" placeholder="What dessert will you bring?" />
                 </div>
               </div>
 
@@ -194,6 +210,10 @@
               <input type="number" id="ev-sides" min="0" value="0" />
             </div>
             <div class="field">
+              <label>Dessert Goal</label>
+              <input type="number" id="ev-desserts" min="0" value="0" />
+            </div>
+            <div class="field">
               <label>Beverage Goal</label>
               <input type="number" id="ev-drinks" min="0" value="0" />
             </div>
@@ -252,6 +272,16 @@
             </label>
             <div class="detail-field" id="edit-sides-detail">
               <input type="text" id="edit-sides-desc" placeholder="What sides?" />
+            </div>
+          </div>
+          <div class="contribution-item">
+            <label class="toggle-label">
+              <input type="checkbox" id="edit-bringing-dessert" />
+              <span class="toggle-box"></span>
+              <span class="toggle-text"><span class="icon">&#127856;</span> Dessert</span>
+            </label>
+            <div class="detail-field" id="edit-dessert-detail">
+              <input type="text" id="edit-dessert-desc" placeholder="What dessert?" />
             </div>
           </div>
           <div class="contribution-item">

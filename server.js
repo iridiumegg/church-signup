@@ -13,10 +13,11 @@ db.exec(`
     id             INTEGER PRIMARY KEY AUTOINCREMENT,
     name           TEXT NOT NULL,
     event_date     TEXT,
-    meal_target    INTEGER DEFAULT 0,
-    sides_target   INTEGER DEFAULT 0,
-    drink_target   INTEGER DEFAULT 0,
-    cleanup_target INTEGER DEFAULT 0,
+    meal_target      INTEGER DEFAULT 0,
+    sides_target     INTEGER DEFAULT 0,
+    dessert_target   INTEGER DEFAULT 0,
+    drink_target     INTEGER DEFAULT 0,
+    cleanup_target   INTEGER DEFAULT 0,
     created_at     DATETIME DEFAULT CURRENT_TIMESTAMP
   );
   CREATE TABLE IF NOT EXISTS signups (
@@ -25,25 +26,30 @@ db.exec(`
     name              TEXT NOT NULL,
     bringing_meal     INTEGER DEFAULT 0,
     meal_description  TEXT DEFAULT '',
-    bringing_sides    INTEGER DEFAULT 0,
-    sides_description TEXT DEFAULT '',
-    bringing_drink    INTEGER DEFAULT 0,
-    drink_description TEXT DEFAULT '',
+    bringing_sides      INTEGER DEFAULT 0,
+    sides_description   TEXT DEFAULT '',
+    bringing_dessert    INTEGER DEFAULT 0,
+    dessert_description TEXT DEFAULT '',
+    bringing_drink      INTEGER DEFAULT 0,
+    drink_description   TEXT DEFAULT '',
     cleaning_up       INTEGER DEFAULT 0,
     created_at        DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES events(id)
   );
 `);
 
-// Safe migration for existing databases without event_id
+// Safe migrations for existing databases
 try { db.exec('ALTER TABLE signups ADD COLUMN event_id INTEGER'); } catch {}
+try { db.exec('ALTER TABLE events ADD COLUMN dessert_target INTEGER DEFAULT 0'); } catch {}
+try { db.exec('ALTER TABLE signups ADD COLUMN bringing_dessert INTEGER DEFAULT 0'); } catch {}
+try { db.exec('ALTER TABLE signups ADD COLUMN dessert_description TEXT DEFAULT \'\''); } catch {}
 
 // Seed the Potluck Meal event on first run
 const { evCount } = db.prepare('SELECT COUNT(*) as evCount FROM events').get();
 if (evCount === 0) {
   const r = db.prepare(`
-    INSERT INTO events (name, meal_target, sides_target, drink_target, cleanup_target)
-    VALUES ('Potluck Meal', 6, 6, 2, 6)
+    INSERT INTO events (name, meal_target, sides_target, dessert_target, drink_target, cleanup_target)
+    VALUES ('Potluck Meal', 6, 6, 4, 2, 6)
   `).run();
   db.prepare('UPDATE signups SET event_id = ? WHERE event_id IS NULL').run(r.lastInsertRowid);
 }
@@ -70,21 +76,21 @@ app.get('/api/events', (req, res) => {
 });
 
 app.post('/api/events', requireAdmin, (req, res) => {
-  const { name, event_date, meal_target, sides_target, drink_target, cleanup_target } = req.body;
+  const { name, event_date, meal_target, sides_target, dessert_target, drink_target, cleanup_target } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Event name is required' });
   const r = db.prepare(`
-    INSERT INTO events (name, event_date, meal_target, sides_target, drink_target, cleanup_target)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(name.trim(), event_date || null, +meal_target || 0, +sides_target || 0, +drink_target || 0, +cleanup_target || 0);
+    INSERT INTO events (name, event_date, meal_target, sides_target, dessert_target, drink_target, cleanup_target)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(name.trim(), event_date || null, +meal_target || 0, +sides_target || 0, +dessert_target || 0, +drink_target || 0, +cleanup_target || 0);
   res.status(201).json(db.prepare('SELECT * FROM events WHERE id = ?').get(r.lastInsertRowid));
 });
 
 app.put('/api/events/:id', requireAdmin, (req, res) => {
-  const { name, event_date, meal_target, sides_target, drink_target, cleanup_target } = req.body;
+  const { name, event_date, meal_target, sides_target, dessert_target, drink_target, cleanup_target } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Event name is required' });
   db.prepare(`
-    UPDATE events SET name=?, event_date=?, meal_target=?, sides_target=?, drink_target=?, cleanup_target=? WHERE id=?
-  `).run(name.trim(), event_date || null, +meal_target || 0, +sides_target || 0, +drink_target || 0, +cleanup_target || 0, req.params.id);
+    UPDATE events SET name=?, event_date=?, meal_target=?, sides_target=?, dessert_target=?, drink_target=?, cleanup_target=? WHERE id=?
+  `).run(name.trim(), event_date || null, +meal_target || 0, +sides_target || 0, +dessert_target || 0, +drink_target || 0, +cleanup_target || 0, req.params.id);
   res.json(db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id));
 });
 
@@ -101,15 +107,16 @@ app.get('/api/events/:eventId/signups', (req, res) => {
 });
 
 app.post('/api/events/:eventId/signups', (req, res) => {
-  const { name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_drink, drink_description, cleaning_up } = req.body;
+  const { name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_dessert, dessert_description, bringing_drink, drink_description, cleaning_up } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
   const r = db.prepare(`
-    INSERT INTO signups (event_id, name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_drink, drink_description, cleaning_up)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO signups (event_id, name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_dessert, dessert_description, bringing_drink, drink_description, cleaning_up)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     req.params.eventId, name.trim(),
     bringing_meal ? 1 : 0, meal_description || '',
     bringing_sides ? 1 : 0, sides_description || '',
+    bringing_dessert ? 1 : 0, dessert_description || '',
     bringing_drink ? 1 : 0, drink_description || '',
     cleaning_up ? 1 : 0
   );
@@ -117,17 +124,18 @@ app.post('/api/events/:eventId/signups', (req, res) => {
 });
 
 app.put('/api/signups/:id', (req, res) => {
-  const { name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_drink, drink_description, cleaning_up } = req.body;
+  const { name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_dessert, dessert_description, bringing_drink, drink_description, cleaning_up } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
   if (!db.prepare('SELECT id FROM signups WHERE id = ?').get(req.params.id)) {
     return res.status(404).json({ error: 'Sign-up not found' });
   }
   db.prepare(`
-    UPDATE signups SET name=?, bringing_meal=?, meal_description=?, bringing_sides=?, sides_description=?, bringing_drink=?, drink_description=?, cleaning_up=? WHERE id=?
+    UPDATE signups SET name=?, bringing_meal=?, meal_description=?, bringing_sides=?, sides_description=?, bringing_dessert=?, dessert_description=?, bringing_drink=?, drink_description=?, cleaning_up=? WHERE id=?
   `).run(
     name.trim(),
     bringing_meal ? 1 : 0, meal_description || '',
     bringing_sides ? 1 : 0, sides_description || '',
+    bringing_dessert ? 1 : 0, dessert_description || '',
     bringing_drink ? 1 : 0, drink_description || '',
     cleaning_up ? 1 : 0,
     req.params.id
