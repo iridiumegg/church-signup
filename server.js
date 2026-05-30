@@ -1,8 +1,8 @@
 const express = require('express');
 const Database = require('better-sqlite3');
 const path = require('path');
-
 const fs = require('fs');
+const crypto = require('crypto');
 
 const app = express();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'parish';
@@ -38,6 +38,7 @@ db.exec(`
     bringing_drink      INTEGER DEFAULT 0,
     drink_description   TEXT DEFAULT '',
     cleaning_up       INTEGER DEFAULT 0,
+    edit_token        TEXT DEFAULT '',
     created_at        DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (event_id) REFERENCES events(id)
   );
@@ -48,6 +49,7 @@ try { db.exec('ALTER TABLE signups ADD COLUMN event_id INTEGER'); } catch {}
 try { db.exec('ALTER TABLE events ADD COLUMN dessert_target INTEGER DEFAULT 0'); } catch {}
 try { db.exec('ALTER TABLE signups ADD COLUMN bringing_dessert INTEGER DEFAULT 0'); } catch {}
 try { db.exec('ALTER TABLE signups ADD COLUMN dessert_description TEXT DEFAULT \'\''); } catch {}
+try { db.exec('ALTER TABLE signups ADD COLUMN edit_token TEXT DEFAULT \'\''); } catch {}
 
 // Seed the Potluck Meal event on first run
 const { evCount } = db.prepare('SELECT COUNT(*) as evCount FROM events').get();
@@ -114,26 +116,34 @@ app.get('/api/events/:eventId/signups', (req, res) => {
 app.post('/api/events/:eventId/signups', (req, res) => {
   const { name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_dessert, dessert_description, bringing_drink, drink_description, cleaning_up } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
+  const editToken = crypto.randomBytes(16).toString('hex');
   const r = db.prepare(`
-    INSERT INTO signups (event_id, name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_dessert, dessert_description, bringing_drink, drink_description, cleaning_up)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO signups (event_id, name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_dessert, dessert_description, bringing_drink, drink_description, cleaning_up, edit_token)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     req.params.eventId, name.trim(),
     bringing_meal ? 1 : 0, meal_description || '',
     bringing_sides ? 1 : 0, sides_description || '',
     bringing_dessert ? 1 : 0, dessert_description || '',
     bringing_drink ? 1 : 0, drink_description || '',
-    cleaning_up ? 1 : 0
+    cleaning_up ? 1 : 0, editToken
   );
-  res.status(201).json(db.prepare('SELECT * FROM signups WHERE id = ?').get(r.lastInsertRowid));
+  const row = db.prepare('SELECT * FROM signups WHERE id = ?').get(r.lastInsertRowid);
+  res.status(201).json({ ...row, edit_token: editToken });
 });
 
 app.put('/api/signups/:id', (req, res) => {
   const { name, bringing_meal, meal_description, bringing_sides, sides_description, bringing_dessert, dessert_description, bringing_drink, drink_description, cleaning_up } = req.body;
   if (!name?.trim()) return res.status(400).json({ error: 'Name is required' });
-  if (!db.prepare('SELECT id FROM signups WHERE id = ?').get(req.params.id)) {
-    return res.status(404).json({ error: 'Sign-up not found' });
+  const existing = db.prepare('SELECT * FROM signups WHERE id = ?').get(req.params.id);
+  if (!existing) return res.status(404).json({ error: 'Sign-up not found' });
+
+  const isAdmin = req.headers['x-admin-password'] === ADMIN_PASSWORD;
+  const tokenMatch = existing.edit_token && req.headers['x-edit-token'] === existing.edit_token;
+  if (!isAdmin && !tokenMatch) {
+    return res.status(403).json({ error: 'You can only edit your own sign-up' });
   }
+
   db.prepare(`
     UPDATE signups SET name=?, bringing_meal=?, meal_description=?, bringing_sides=?, sides_description=?, bringing_dessert=?, dessert_description=?, bringing_drink=?, drink_description=?, cleaning_up=? WHERE id=?
   `).run(

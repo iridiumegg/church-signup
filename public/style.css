@@ -659,16 +659,31 @@ main {
 /* ── Footer ── */
 footer {
   text-align: center;
-  color: var(--text-mid);
-  font-style: italic;
-  font-size: 0.88rem;
-  padding: 1.25rem;
+  padding: 1.5rem 1.25rem 2rem;
 }
 
 .footer-divider {
   height: 2px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   background: linear-gradient(90deg, transparent, var(--gold-dark), transparent);
+}
+
+.footer-quote {
+  font-style: italic;
+  color: var(--text-mid);
+  font-size: 0.88rem;
+  max-width: 660px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.footer-quote cite {
+  display: block;
+  font-style: normal;
+  font-size: 0.82rem;
+  color: var(--gold-dark);
+  margin-top: 0.6rem;
+  letter-spacing: 0.04em;
 }
 
 /* ── Responsive ── */

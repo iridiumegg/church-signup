@@ -4,6 +4,18 @@ let currentEvent   = null;
 let currentSignups = [];
 let adminPassword  = sessionStorage.getItem('adminPassword') || null;
 
+// ── Token helpers (localStorage so tokens survive page refresh) ──
+function getTokens() {
+  try { return JSON.parse(localStorage.getItem('church-signup-tokens') || '{}'); } catch { return {}; }
+}
+function saveToken(id, token) {
+  const tokens = getTokens();
+  tokens[id] = token;
+  localStorage.setItem('church-signup-tokens', JSON.stringify(tokens));
+}
+function getToken(id) { return getTokens()[id] || ''; }
+function hasToken(id) { return !!getTokens()[id]; }
+
 // ── Init ──
 async function init() {
   setupModalClose();
@@ -119,6 +131,10 @@ function buildEntry(signup) {
   if (signup.cleaning_up)    tags.push(`<span class="contrib-tag cleanup">&#10024; Clean-Up</span>`);
   if (!tags.length)          tags.push(`<span class="contrib-tag attending">Attending</span>`);
 
+  const canEdit = hasToken(signup.id) || !!adminPassword;
+  const editBtn = canEdit
+    ? `<button class="btn-icon btn-edit" data-edit="${signup.id}" title="Edit">&#9998;</button>`
+    : '';
   const delBtn = adminPassword
     ? `<button class="btn-icon btn-remove" data-del="${signup.id}" title="Delete">&#10005;</button>`
     : '';
@@ -130,7 +146,7 @@ function buildEntry(signup) {
     </div>
     <div class="entry-actions">
       <span class="signup-date">${fmtShortDate(signup.created_at)}</span>
-      <button class="btn-icon btn-edit" data-edit="${signup.id}" title="Edit">&#9998;</button>
+      ${editBtn}
       ${delBtn}
     </div>
   `;
@@ -175,6 +191,8 @@ function setupFormListeners() {
       return;
     }
 
+    const data = await res.json();
+    saveToken(data.id, data.edit_token);
     document.getElementById('signup-form').reset();
     document.querySelectorAll('#signup-form .detail-field').forEach(d => d.classList.remove('visible'));
     await loadSignups();
@@ -216,7 +234,11 @@ function setupEditModalListeners() {
 
     const res = await fetch(`/api/signups/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Edit-Token': getToken(parseInt(id)),
+        ...(adminPassword ? { 'X-Admin-Password': adminPassword } : {}),
+      },
       body: JSON.stringify(body),
     });
 
