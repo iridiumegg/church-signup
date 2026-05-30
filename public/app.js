@@ -427,8 +427,6 @@ function setupAdminListeners() {
     }
   });
 
-  // Print
-  document.getElementById('btn-print').addEventListener('click', printView);
 }
 
 function updateAdminUI() {
@@ -477,82 +475,6 @@ function resetEventForm() {
   document.getElementById('ev-form-title').textContent  = 'Create New Event';
   document.getElementById('btn-ev-cancel').style.display = 'none';
   document.getElementById('ev-form-error').style.display = 'none';
-}
-
-// ── Print ──
-function printView() {
-  if (!currentEvent) return;
-  const ev  = currentEvent;
-  const sgs = currentSignups;
-
-  const meals    = sgs.filter(s => s.bringing_meal);
-  const sides    = sgs.filter(s => s.bringing_sides);
-  const desserts = sgs.filter(s => s.bringing_dessert);
-  const drinks   = sgs.filter(s => s.bringing_drink);
-  const cleanup  = sgs.filter(s => s.cleaning_up);
-
-  const html = `<!DOCTYPE html><html><head>
-<meta charset="UTF-8">
-<title>Sign-Up Sheet — ${escHtml(ev.name)}</title>
-<style>
-  body { font-family: Georgia, serif; max-width: 700px; margin: 40px auto; color: #1a0f05; }
-  h1 { color: #6b1a1a; font-size: 1.8rem; margin-bottom: 0.2rem; }
-  .meta { color: #888; font-style: italic; margin-bottom: 1.5rem; font-size: 0.95rem; }
-  .progress { display: flex; gap: 2.5rem; margin-bottom: 2rem; flex-wrap: wrap; border: 1px solid #eee; padding: 1rem 1.5rem; border-radius: 4px; background: #fafaf7; }
-  .prog-item { text-align: center; }
-  .prog-num { font-size: 2rem; font-weight: bold; color: #6b1a1a; line-height: 1; }
-  .prog-lbl { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-top: 0.2rem; }
-  .prog-tgt { font-size: 0.8rem; color: #bbb; }
-  h2 { color: #6b1a1a; border-bottom: 1px solid #ddd; padding-bottom: 0.3rem; margin-top: 1.75rem; font-size: 1.1rem; }
-  table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
-  th { text-align: left; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #aaa; padding: 0.35rem 0.5rem; border-bottom: 2px solid #eee; }
-  td { padding: 0.45rem 0.5rem; border-bottom: 1px solid #f0ede5; font-size: 0.95rem; }
-  tr:last-child td { border-bottom: none; }
-  .none { color: #bbb; font-style: italic; font-size: 0.9rem; margin-top: 0.4rem; }
-  footer { margin-top: 3rem; text-align: center; color: #ccc; font-style: italic; font-size: 0.88rem; }
-</style>
-</head><body>
-<h1>&#9768; ${escHtml(ev.name)}</h1>
-<p class="meta">${ev.event_date ? 'Date: ' + fmtShortDate(ev.event_date) + ' &nbsp;&bull;&nbsp; ' : ''}Total sign-ups: ${sgs.length}</p>
-<div class="progress">
-  ${printProgItem(meals.length, ev.meal_target, 'Main Dishes')}
-  ${printProgItem(sides.length, ev.sides_target, 'Sides')}
-  ${printProgItem(desserts.length, ev.dessert_target, 'Desserts')}
-  ${printProgItem(drinks.length, ev.drink_target, 'Beverages')}
-  ${printProgItem(cleanup.length, ev.cleanup_target, 'Clean-Up')}
-</div>
-${printTable('&#127859; Main Dishes', meals, 'meal_description')}
-${printTable('&#129367; Sides / Salads', sides, 'sides_description')}
-${printTable('&#127856; Desserts', desserts, 'dessert_description')}
-${printTable('&#127863; Beverages', drinks, 'drink_description')}
-${printTable('&#129529; Clean-Up Volunteers', cleanup, null)}
-<footer>&#9768; Glory to God for all things &#9768;</footer>
-</body></html>`;
-
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
-  win.print();
-}
-
-function printProgItem(count, target, label) {
-  return `<div class="prog-item">
-    <div class="prog-num">${count}</div>
-    <div class="prog-lbl">${label}</div>
-    ${target ? `<div class="prog-tgt">of ${target}</div>` : ''}
-  </div>`;
-}
-
-function printTable(title, items, descField) {
-  if (!items.length) return `<h2>${title}</h2><p class="none">None signed up yet.</p>`;
-  const rows = items.map(s => `
-    <tr>
-      <td>${escHtml(s.name)}</td>
-      <td>${descField && s[descField] ? escHtml(s[descField]) : '<span style="color:#bbb">—</span>'}</td>
-    </tr>`).join('');
-  return `<h2>${title}</h2>
-<table><thead><tr><th>Name</th><th>${descField ? 'What they\'re bringing' : ''}</th></tr></thead>
-<tbody>${rows}</tbody></table>`;
 }
 
 // ── Modal Helpers ──
