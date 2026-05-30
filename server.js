@@ -2,9 +2,14 @@ const express = require('express');
 const Database = require('better-sqlite3');
 const path = require('path');
 
+const fs = require('fs');
+
 const app = express();
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'parish';
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'signups.db');
+
+// Create the directory if it doesn't exist (e.g. /data before a volume is mounted)
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 
 const db = new Database(DB_PATH);
 
