@@ -128,7 +128,7 @@ function buildEntry(signup) {
   if (signup.bringing_sides)   tags.push(`<span class="contrib-tag sides">&#129367; ${escHtml(signup.sides_description  || 'Sides')}</span>`);
   if (signup.bringing_dessert) tags.push(`<span class="contrib-tag dessert">&#127856; ${escHtml(signup.dessert_description || 'Dessert')}</span>`);
   if (signup.bringing_drink)   tags.push(`<span class="contrib-tag drink">&#127863; ${escHtml(signup.drink_description   || 'Drink')}</span>`);
-  if (signup.cleaning_up)    tags.push(`<span class="contrib-tag cleanup">&#10024; Clean-Up</span>`);
+  if (signup.cleaning_up)    tags.push(`<span class="contrib-tag cleanup">&#129529; Clean-Up</span>`);
   if (!tags.length)          tags.push(`<span class="contrib-tag attending">Attending</span>`);
 
   const canEdit = hasToken(signup.id) || !!adminPassword;
@@ -525,7 +525,7 @@ ${printTable('&#127859; Main Dishes', meals, 'meal_description')}
 ${printTable('&#129367; Sides / Salads', sides, 'sides_description')}
 ${printTable('&#127856; Desserts', desserts, 'dessert_description')}
 ${printTable('&#127863; Beverages', drinks, 'drink_description')}
-${printTable('&#10024; Clean-Up Volunteers', cleanup, null)}
+${printTable('&#129529; Clean-Up Volunteers', cleanup, null)}
 <footer>&#9768; Glory to God for all things &#9768;</footer>
 </body></html>`;
 
